@@ -33,10 +33,11 @@ class RedisSession(SessionDriver):
             session_data.update(__expires__=expires)
         session_data = pickle.dumps(session_data)
         self.__create_redis_client()
-        self.client.set(session_id, session_data)
         if expires:
             delta_seconds = int((expires - datetime.utcnow()).total_seconds())
-            self.client.expire(session_id,delta_seconds)
+            self.client.setex(session_id, session_data, delta_seconds)  # need redis version >= 2.0.0
+        else:
+            self.client.set(session_id, session_data)
 
     def clear(self, session_id):
         self.__create_redis_client()
