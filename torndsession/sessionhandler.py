@@ -26,4 +26,5 @@ class SessionBaseHandler(tornado.web.RequestHandler, torndsession.session.Sessio
         """
         Overwrite tornado.web.RequestHandler on_finish.
         """
-        self.session.flush()    # try to save session
+        if hasattr(self, '__session_manager'):
+            self.session.flush()    # try to save session
